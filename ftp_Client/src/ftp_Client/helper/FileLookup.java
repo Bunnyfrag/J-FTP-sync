@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fileSystem;
+package ftp_Client.helper;
 
 import java.io.File;
 
