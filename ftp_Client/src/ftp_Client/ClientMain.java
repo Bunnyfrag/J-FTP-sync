@@ -1,22 +1,25 @@
 package ftp_Client;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import javax.swing.*;
+
+import ftp_Client.helper.FileLookup;
+
 import java.awt.Color;
 import java.awt.Font;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
 import java.awt.GridLayout;
+import java.awt.List;
 import java.awt.event.*;
 import java.awt.Dimension;
 
-public class ClientMain extends JFrame {
+public class ClientMain extends JFrame implements ActionListener{
 
 	 private javax.swing.JPanel jContentPane = null;
 	 private JTree              jTreeLocal        = null;
@@ -25,6 +28,10 @@ public class ClientMain extends JFrame {
        JTextField tf1;
        JButton btn1;
        JPasswordField p1;
+       AbstractButton t1 = null;
+       String uname ="";
+       String password="";
+
 	 
 	ClientMain(){
 		super ("ClientFtp");
@@ -34,11 +41,9 @@ public class ClientMain extends JFrame {
 	          }
 	       };
 	       
-	       
-	       //
-	    
-	      
-	        JFrame frame = new JFrame("Login Form");
+	   
+	       final JPanel composantsAPlacer = new JPanel();
+
 	        l1 = new JLabel("Login Form");
 	        l1.setForeground(Color.blue);
 	        l1.setFont(new Font("Serif", Font.BOLD, 20));
@@ -48,34 +53,38 @@ public class ClientMain extends JFrame {
 	        tf1 = new JTextField();
 	        p1 = new JPasswordField();
 	        btn1 = new JButton("Login");
-	       
+	        
+	   
 	        l1.setBounds(100, 30, 400, 30);
-	        l2.setBounds(80, 70, 200, 30);
-	        l3.setBounds(80, 110, 200, 30);
-	        tf1.setBounds(300, 70, 200, 30);
-	        p1.setBounds(300, 110, 200, 30);
-	        btn1.setBounds(150, 160, 100, 30);
+	        l2.setBounds(80, 70, 100, 30);
+	        l3.setBounds(307, 70, 83, 30);
+	        tf1.setBounds(192, 70, 100, 30);
+	        p1.setBounds(389, 70, 100, 30);
+	        btn1.setBounds(539, 70, 100, 30);
 	       
-	        frame.add(l1);
-	        frame.add(l2);
-	        frame.add(tf1);
-	        frame.add(l3);
-	        frame.add(p1);
-	        frame.add(btn1);
+	        composantsAPlacer.add(l1);
+	        composantsAPlacer.add(l2);
+	        composantsAPlacer.add(tf1);
+	        composantsAPlacer.add(l3);
+	        composantsAPlacer.add(p1);
+	        composantsAPlacer.add(btn1);
+	        
+			
+	        btn1.addActionListener(this);
 	       
-	        frame.setSize(400, 400);
-	        frame.setLayout(null);
-	        frame.setVisible(true);
+	        composantsAPlacer.setSize(623, 416);
+	        composantsAPlacer.setLayout(null);
+	        composantsAPlacer.setVisible(true);
 
 	       
-	       //
+	       
 
 	       addWindowListener(l);
-	       setSize(200,100);
+	       setSize(800,707);
 	       setVisible(true);
 	       
 	       //Instancier la fênetre principale
-			final JPanel composantsAPlacer = new JPanel();
+			/*final JPanel composantsAPlacer = new JPanel();
 			GridLayout grid = new GridLayout(2,3);
 			composantsAPlacer.setLayout(grid);
 
@@ -91,31 +100,27 @@ public class ClientMain extends JFrame {
 			JPasswordField  passwordField1 = new JPasswordField ("");
 			passwordField1.setPreferredSize(new Dimension(50,20 ));
 			composantsAPlacer.add(passwordField1);
-			composantsAPlacer.add(new JButton("Button "));
+			JButton    but=new JButton("ici");
+			composantsAPlacer.add(but);
+			
+			but.addActionListener(this);*/
 
-			
-			
 			
 			//composantsAPlacer.add(new JButton("Button 2 "));
 			composantsAPlacer.add(getLocal());
 
-			JPanel panel2 = new JPanel();
-			GridLayout grid2 = new GridLayout(3,3);
-
-			panel2.setLayout(grid2);
-
 			composantsAPlacer.add(getRemote());
 
-			panel2.add(new JButton("Button 4 "));
-			panel2.add(new JButton("Button 5 "));
-			panel2.add(new JButton("Button 6"));
-			panel2.add(new JButton("Button 7"));
-			panel2.add(new JButton("Button 8 "));
-
+			
 			this.setContentPane(composantsAPlacer);
+			
+			JTree tree = new JTree();
+			tree.setBounds(0, 206, 500, 445);
+			composantsAPlacer.add(tree);
 
 	  
 	}
+
 
 	private JTree getLocal() {
 		if (jTreeLocal == null) {
@@ -140,7 +145,8 @@ public class ClientMain extends JFrame {
 		 return jContentPane;
 	}
 	
-
+	
+    
 	
 	public static void main(String[] args) {
 		
@@ -148,8 +154,14 @@ public class ClientMain extends JFrame {
 
 				
 		
-	//	Client client = new Client("127.0.0.1", 21);
-		String local = "C:\\ftp\\testFTP";
+	//Client client = new Client("127.0.0.1", 21);
+		String local = "C:\\ftp";
+		//String local = "C:\\Users\\Kahina\\Téléchargements";
+	     //File inputFile = new File("C:\\ftp\\USERDATA.txt");
+
+		DiffList a = new DiffList( FileLookup.list( new File(local),null ), local );
+		DiffList b = null;
+		System.out.println( "a: " + a );
 
 		ConnexionFtp connexion_server= null;
        
@@ -158,30 +170,29 @@ public class ClientMain extends JFrame {
             //directories =  ftpClient.listDirectories();
             //directories =  ftpClient.changeWorkingDirectory(pathname);
         	
-        	
+            //Scanner in = new Scanner(new File("C:\\ftp\\USERDATA.txt"));
+
 			
             String filePath = "/test";
             
-            /*Ebauche de la fonction UploadFileOrDirectory
-            String remote="testserv.txt";
-            String local2= "C:\\Users\\Kahina\\Desktop\\test2.txt";
-            InputStream input = new FileInputStream(local2);
-            connexion_server.getFtpClient().storeFile( remote,  input);
-            */
+    
             String remote="/";
-            String local2= "C:\\Users\\Kahina\\Desktop\\test";
-            
+            //String local2= "C:\\Users\\Kahina\\Desktop\\test";
+            String local2="/";
+        
             //test fonction upload
             //connexion_server.uploadFileOrDirectory(remote, local2);
             
              //tester la fonction download
-            connexion_server.getFileOrDirectory(filePath,local);
+             //connexion_server.downloadFileOrDirectory(filePath,local);
+             //test fonction compare
+             b = new DiffList( connexion_server.list(local2,null), local2 );
+             
+             connexion_server.removeFileOrDirectory(local,true);
+             //String time = connexion_server.getFtpClient().getModificationTime(filePath);
+             //System.out.println("Server Reply: " + time);
             
-            
-            //String time = connexion_server.getFtpClient().getModificationTime(filePath);
-            //System.out.println("Server Reply: " + time);
-            
-            /*for(FTPFile directory : directories)
+             /*for(FTPFile directory : directories)
             {
                 System.out.println(directory.getName());
                 FTPFile[] files = new FTPFile[1000];
@@ -199,13 +210,36 @@ public class ClientMain extends JFrame {
 
         } catch (IOException e) {
             System.err.println(e.getMessage());
-            
 
         }
         if((connexion_server==null)) {
         	System.out.println("Error Null pointer");
-       }      
+       }
+       // System.out.println( "b: " + b );
+       // a.compare( b, connexion_server, false, false );
 	
 	}
 
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		// TODO Auto-generated method stub
+        uname= tf1.getText();
+        password=p1.getText();
+    	System.out.println(uname);
+
+        if(uname.equals("nnn") && password.equals(""))
+        {
+           //Welcome wel = new Welcome();
+           //wel.setVisible(true);
+           JLabel label = new JLabel("Welcome:"+uname);
+           ///wel.getContentPane().add(label);
+         }
+         else
+         {
+           JOptionPane.showMessageDialog(this,"Incorrect login or password",
+           "Error",JOptionPane.ERROR_MESSAGE); 
+         }
+		
+	}
 }
